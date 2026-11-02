@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdaptLearn — 100 Level Quest</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐘</text></svg>"
+    />
+    <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header / pet / streak HUD ------------------------------ -->
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-logo">🐘</div>
+          <div>
+            <h1>AdaptLearn</h1>
+            <p>100 Levels of Knowledge</p>
+          </div>
+        </div>
+
+        <div class="avatar-section">
+          <div class="pet-container">
+            <div class="pet" id="digitalPet">🐣</div>
+            <div class="pet-level" id="petLevel">Lvl 1</div>
+          </div>
+          <div class="user-stats">
+            <div class="stat">
+              <span class="stat-label">Streak</span>
+              <span class="stat-value" id="statStreak">🔥 0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Stars</span>
+              <span class="stat-value" id="statStars">⭐ 0</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Quest map — the landing screen ------------------------- -->
+      <section id="questMapView" class="quest-map-container">
+        <h2 class="card-title">Your Learning World</h2>
+        <p class="muted">Select a module to begin your quest!</p>
+        <div class="map-grid" id="mapGrid"></div>
+      </section>
+
+      <!-- Quiz screen (hidden until a level is picked) ----------- -->
+      <section class="app-grid" id="quizView" style="display: none">
+        <aside class="sidebar">
+          <section class="card sticker-card">
+            <h2 class="card-title">Profile</h2>
+            <div class="profile-selector">
+              <button class="profile-btn active" data-profile="dyslexia">
+                👓 Dyslexia
+              </button>
+              <button class="profile-btn" data-profile="adhd">⚡ ADHD</button>
+            </div>
+          </section>
+
+          <section class="card sticker-card">
+            <h2 class="card-title">Mastery</h2>
+            <div id="masteryList" class="mastery-list"></div>
+          </section>
+
+          <button class="btn btn-outline" style="width: 100%" id="backToMapBtn">
+            🗺️ Back to Map
+          </button>
+        </aside>
+
+        <div class="main-column">
+          <section class="card sticker-card passage-card">
+            <div class="passage-head">
+              <span class="format-badge" id="passageBadge">Plain Text</span>
+              <h2 class="card-title" id="passageTitle">Loading...</h2>
+            </div>
+
+            <div class="passage-container">
+              <div class="visual-aid" id="visualAid">
+                <span id="visualAidEmoji">📖</span>
+                <span id="visualAidText">Visual Aid</span>
+              </div>
+              <p class="passage-text" id="passageText"></p>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-black" id="readAloudBtn">
+                🔊 Read Aloud
+              </button>
+              <button class="btn btn-outline" id="stopAudioBtn" hidden>
+                ⏹ Stop
+              </button>
+              <button class="btn btn-yellow" id="simplifyBtn">
+                ✨ Simplify
+              </button>
+            </div>
+          </section>
+
+          <section class="card sticker-card quiz-card">
+            <h2 class="card-title">Question</h2>
+            <div class="question-prompt" id="questionPrompt">Loading...</div>
+
+            <div class="answer-row">
+              <input
+                type="text"
+                id="answerInput"
+                placeholder="Type your answer here..."
+                autocomplete="off"
+              />
+              <button class="btn btn-mic" id="micBtn">🎤</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="btn-row quiz-actions">
+              <button class="btn btn-primary" id="submitBtn">Submit</button>
+              <button class="btn btn-black" id="nextBtn">Next →</button>
+            </div>
+          </section>
+
+          <section class="card sticker-card format-controller">
+            <h2 class="card-title">Adaptive Engine</h2>
+
+            <div class="format-row">
+              <div>
+                <span class="muted">Current format:</span>
+                <!-- FIXME: id "currentFormat" is legacy — renaming to currentDisplayStyle
+                 when we touch format.js, so don't hardcode it anywhere new -->
+                <strong id="currentFormat" class="format-name"
+                  >Plain Text</strong
+                >
+              </div>
+              <button class="btn btn-primary" id="chooseFormatBtn">
+                🎲 Re-choose
+              </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="muted">Did this format help?</p>
+            <div class="btn-row">
+              <button class="btn btn-success" id="helpfulBtn">👍 Yes</button>
+              <button class="btn btn-danger" id="notHelpfulBtn">👎 No</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <!-- Pop-up dictionary (hard words) ------------------------- -->
+    <div class="modal-overlay" id="dictionaryModal">
+      <div class="modal-content sticker-card">
+        <div class="modal-header">
+          <h2 id="dictWord">Word</h2>
+          <button class="close-btn" onclick="closeDictionary()">✕</button>
+        </div>
+        <div class="dict-body">
+          <div class="dict-emoji" id="dictEmoji">📖</div>
+          <p id="dictDefinition">Definition</p>
+          <button class="btn btn-black" id="dictAudioBtn">🔊 Hear it</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="/static/js/app.js"></script>
+  </body>
+</html>
