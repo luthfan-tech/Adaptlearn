@@ -1,5 +1,6 @@
                  ADAPTLEARN — HOW IT WORKS
               (my notes, written the night before)
+
 ═══════════════════════════════════════════════════════════
 
 1. THE PROBLEM (why I built this)
@@ -10,10 +11,10 @@
    around.
 
 2. THE CORE LOOP (the whole project in 4 steps)
-      Student answers a question
-              ↓
-      Backend updates skill mastery (BKT)
-              ↓
-      Bandit picks the best format for them
-              ↓
-      Student sees content in the format that works
+   Student answers a question
+   ↓
+   Backend updates skill mastery (BKT)
+   ↓
+   Bandit picks the best format for them
+   ↓
+   Student sees content in the format that works
