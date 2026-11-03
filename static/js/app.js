@@ -10,7 +10,7 @@
 // delete one of these without grepping for its name in the HTML strings.
 
 import { api } from "./api.js";
-import { state, update } from "./state.js";
+import { state, update, readCompletedLevels } from "./state.js";
 import * as quiz from "./quiz.js";
 import * as format from "./format.js";
 import * as speech from "./speech.js";
@@ -19,8 +19,6 @@ import { toast } from "./toast.js";
 
 // renamed from curriculumData — the brief asked for "lessonLibrary"
 let lessonLibrary = [];
-
-const LEVEL_PROGRESS_KEY = "adaptlearn_completed";
 
 // ── window-level handlers (called from inline HTML onclick) ──
 
@@ -86,22 +84,6 @@ window.closeLevelModal = function () {
   const m = document.getElementById("levelModal");
   if (m) m.classList.remove("show");
 };
-
-// ── localStorage helpers (kept tiny on purpose) ──
-
-function readCompletedLevels() {
-  const raw = localStorage.getItem(LEVEL_PROGRESS_KEY);
-  if (!raw) return [];
-
-  try {
-    const parsed = JSON.parse(raw);
-    // guard against someone shoving an object/string into this key by hand
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    console.warn("Corrupt level progress in localStorage, resetting:", err);
-    return [];
-  }
-}
 
 // ── startup ──
 
@@ -276,10 +258,13 @@ function wireEvents() {
 
       update({ disability: profile });
 
-      // FIXME: format.js also toggles body.dyslexic based on the *format*
-      // (open_dyslexic vs not). That fights this line. Until we settle who
-      // owns the class, we set it from the profile here. See note in format.js.
+      // Two independent body classes, one per profile:
+      //   .dyslexic → font swap (see style.css)
+      //   .adhd     → reduced motion + narrower reading column (see style.css)
+      // format.js no longer touches these — the *profile* owns them, the
+      // *format* only changes the passage text rendering.
       document.body.classList.toggle("dyslexic", profile === "dyslexia");
+      document.body.classList.toggle("adhd", profile === "adhd");
 
       // backend sync is best-effort — the UI already moved
       try {

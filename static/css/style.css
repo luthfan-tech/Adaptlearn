@@ -708,11 +708,54 @@ input[type="text"]:focus {
   }
 }
 
+/* ---------- ADHD profile: reduce distraction --------------------
+   Motion is the biggest attention cost for ADHD readers — the pet
+   bounce, button hover-lift, and per-answer confetti all compete
+   with the passage text for focus. We keep the *reward* (stars,
+   toasts, level-clear sparkle) and drop the *motion*.
+   Only the profile toggle in app.js adds/removes body.adhd. */
+
+body.adhd .pet {
+  /* the perpetual bounce is the single most distracting element
+     on the page — kill it, but keep the emoji swap so the pet
+     still visibly evolves */
+  animation: none;
+}
+
+body.adhd .btn:hover {
+  /* the sticker-lift microinteraction is cute once and fidgety
+     after that; flat hover keeps the cursor cue without the jiggle */
+  transform: none;
+  box-shadow: none;
+}
+
+body.adhd .passage-text {
+  /* narrower column = less eye-travel to re-acquire line position.
+     55ch ≈ 12–14 words per line at 1.2rem — the sweet spot most
+     reading research lands on for focus retention. */
+  max-width: 55ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* ---------- accessibility: kill motion for reduced-motion users ---- */
 @media (prefers-reduced-motion: reduce) {
   .pet,
   .btn,
   * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* functional cues (mic pulse, toast fade) are exempt — motion that
+     communicates state stays, motion that decorates goes */
+  .pet,
+  .btn,
+  .map-module,
+  .word,
+  .mastery-fill {
     animation: none !important;
     transition: none !important;
   }

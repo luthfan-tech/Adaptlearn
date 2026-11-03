@@ -127,8 +127,11 @@
             <div class="format-row">
               <div>
                 <span class="muted">Current format:</span>
-                <!-- FIXME: id "currentFormat" is legacy — renaming to currentDisplayStyle
-                 when we touch format.js, so don't hardcode it anywhere new -->
+                <!-- This label is written by format.js's updateFormatUI().
+                     The id stays "currentFormat" on purpose — it mirrors
+                     state.currentFormat in state.js and the main.py
+                     DISPLAY_MODES contract. Don't rename one without
+                     the other. -->
                 <strong id="currentFormat" class="format-name"
                   >Plain Text</strong
                 >

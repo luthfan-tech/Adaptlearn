@@ -266,7 +266,12 @@ export async function submitAnswer() {
     nextStats.correct += 1;
     nextStats.streak += 1;
 
-    if (window.confetti) {
+    // ADHD profile: skip the particle blast, but don't skip the reward
+    // — the toast is the acknowledgement. Confetti is a known focus
+    // disruptor for ADHD readers; the "nice work" signal still lands.
+    if (state.disability === "adhd") {
+      toast("Nice! ⭐", "success");
+    } else if (window.confetti) {
       window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     }
     evolvePet(nextStats.streak);
@@ -335,8 +340,14 @@ export function nextQuestion() {
   markComplete(passage.id);
 
   toast("🎉 Level Cleared!", "success");
+  // Level-clear confetti is a bigger "moment" than a single correct answer,
+  // so ADHD users still get it here — but at a much lower particle count.
+  // Rationale: a short burst at the end of a level is a *milestone*
+  // celebration, not a per-question distraction. If you'd rather gate
+  // this too, change the condition to `state.disability !== "adhd"`.
   if (window.confetti) {
-    window.confetti({ particleCount: 200, spread: 100, origin: { y: 0.4 } });
+    const count = state.disability === "adhd" ? 40 : 200;
+    window.confetti({ particleCount: count, spread: 100, origin: { y: 0.4 } });
   }
   setTimeout(() => {
     if (window.showMap) window.showMap();
