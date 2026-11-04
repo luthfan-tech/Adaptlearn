@@ -14,6 +14,9 @@ Ever noticed how most educational platforms deliver the same content to every le
 AdaptLearn adapts the learning experience to the student instead of forcing the student to adapt to the platform.
 
 ---
+Website link:
+https://adaptlearn-1mcc.onrender.com
+---
 
 ## Why this project exists
 
