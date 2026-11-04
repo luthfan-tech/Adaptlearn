@@ -41,6 +41,10 @@ Here is exactly how the adaptive loop works under the hood:
 
 ---
 
+
+
+
+
 🛠️ Tech Stack
 
 Backend:
@@ -55,6 +59,10 @@ https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascri
 Accessibility & APIs:
 https://img.shields.io/badge/Web_Speech_API-000000?style=for-the-badge&logo=googlechrome&logoColor=white
 https://img.shields.io/badge/LocalStorage-FFD13B?style=for-the-badge&logo=databricks&logoColor=black
+
+
+
+
 
 ---
 
