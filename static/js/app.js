@@ -219,61 +219,34 @@ function wireEvents() {
     }
   });
 
-  on("simplifyBtn", async () => {
-    const passage = quiz.currentPassage();
-    if (!passage) return;
-
-    const btn = document.getElementById("simplifyBtn");
-    if (btn) btn.disabled = true;
-
-    try {
-      const result = await api.simplify(passage.text);
-      // mutate the in-memory passage so renderPassage picks up the new text
-      passage.simplified = result.simplified;
-      // NOTE: key is still "currentFormat" — do NOT rename until the
-      // coordinated format.js/quiz.js/state.js pass. Renaming here alone
-      // would break every reader.
-      update({ currentFormat: "simplified_text" });
-      quiz.renderPassage();
-      toast("Simplified!", "success");
-    } catch (err) {
-      console.error("simplify failed:", err);
-      toast("Error simplifying", "error");
-    } finally {
-      if (btn) btn.disabled = false;
-    }
-  });
-
   document.querySelectorAll(".profile-btn").forEach((btn) => {
-    btn.onclick = async (evt) => {
-      evt.preventDefault();
-      const profile = evt.currentTarget.dataset.profile;
+    btn.onclick = async (e) => {
+      e.preventDefault();
+      const v = e.currentTarget.dataset.profile;
 
-      // flip the visible active pill first — instant feedback beats
-      // waiting on the server round-trip
+      // 1. Update active button UI
       document
         .querySelectorAll(".profile-btn")
         .forEach((b) => b.classList.remove("active"));
-      evt.currentTarget.classList.add("active");
+      e.currentTarget.classList.add("active");
 
-      update({ disability: profile });
+      // 2. Update local state
+      update({ disability: v });
 
-      // Two independent body classes, one per profile:
-      //   .dyslexic → font swap (see style.css)
-      //   .adhd     → reduced motion + narrower reading column (see style.css)
-      // format.js no longer touches these — the *profile* owns them, the
-      // *format* only changes the passage text rendering.
-      document.body.classList.toggle("dyslexic", profile === "dyslexia");
-      document.body.classList.toggle("adhd", profile === "adhd");
-
-      // backend sync is best-effort — the UI already moved
-      try {
-        await api.setProfile(profile);
-      } catch (err) {
-        console.warn("Profile sync failed:", err);
+      // 3. Toggle Font (Fixed to remove class if NOT dyslexia)
+      if (v === "dyslexia") {
+        document.body.classList.add("dyslexic");
+      } else {
+        document.body.classList.remove("dyslexic"); // This fixes the ADHD button!
       }
 
-      toast("Profile: " + profile.toUpperCase(), "success");
+      // 4. Tell the backend
+      try {
+        await api.setProfile(v);
+      } catch (err) {
+        console.warn("Profile sync failed", err);
+      }
+      toast("Profile: " + v.toUpperCase(), "success");
     };
   });
 }
